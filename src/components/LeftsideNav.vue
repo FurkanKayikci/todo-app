@@ -1,13 +1,10 @@
 <template>
-  <v-col cols="3">
+  <v-col cols="12" lg="3" md="4" sm="12">
     <v-sheet rounded="lg">
       <v-list color="transparent">
         <v-list-item color="grey lighten-4">
           <v-list-item-content>
-            <v-btn rounded color="deep-purple white--text">
-              <v-icon left> mdi-plus </v-icon>
-              ADD TASK
-            </v-btn>
+            <AddTask></AddTask>
           </v-list-item-content>
         </v-list-item>
 
@@ -35,31 +32,32 @@
 </template>
 
 <script>
+import AddTask from "./AddTask.vue";
 import { mapGetters } from "vuex";
 import { mapMutations } from "vuex";
+
 export default {
   name: "LeftsideNav",
   computed: mapGetters({
-    tasks: "getTasks",
+    tasks: "getTasks"
   }),
-  data: () => ({
-    return: {
-      clickedTask: {},
-    },
-  }),
+  components: {
+    AddTask
+  },
+  data() {
+    return {
+      clickedTask: null
+    };
+  },
   methods: {
-      ...mapMutations([
-          'setCurrentTask'
-      ]),
+    ...mapMutations(["setCurrentTask"]),
 
     showTask(taskId) {
-      // find ile yaomayı dene !
-      this.clickedTask = this.tasks.filter((task) => task.id === taskId);
-      this.setCurrentTask(this.clickedTask[0]);
-    },
-  },
+      this.clickedTask = this.tasks.find(t => t.id === taskId);
+      this.setCurrentTask(this.clickedTask);
+    }
+  }
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
