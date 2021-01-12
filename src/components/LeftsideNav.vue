@@ -1,7 +1,7 @@
 <template>
   <v-col cols="12" lg="3" md="4" sm="12">
-    <v-sheet rounded="lg">
-      <v-list color="transparent">
+    <v-sheet rounded="lg" class="mh-70">
+      <v-list color="transparent" class="scroll">
         <v-list-item color="grey lighten-4">
           <v-list-item-content>
             <AddTask></AddTask>
@@ -60,4 +60,11 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.mh-70 {
+  height: 70vh;
+}
+.scroll {
+  overflow-y: auto;
+}
+</style>

@@ -70,18 +70,16 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["addTaskToState"]),
+    ...mapActions(["addTaskToState", "fetchTasks"]),
     addTaskForm() {
       const taskLength = this.$store.state.tasks.length;
-      const tempTask = [
-        {
-          id: taskLength ? taskLength + 1 : 0,
-          title: this.taskName,
-          text: this.taskExplanation,
-          date: new Date().toLocaleString(),
-          deleteStatus: false
-        }
-      ];
+      const tempTask = {
+        id: taskLength ? taskLength + 1 : 0,
+        title: this.taskName,
+        text: this.taskExplanation,
+        date: new Date().toLocaleString(),
+        deleteStatus: false
+      };
       this.addTaskToState(tempTask);
       this.dialog = false;
       this.taskName = "";

@@ -6,39 +6,67 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     tasks: [],
-    currentTask: {}
+    currentTask: {},
+    editingTask: []
   },
   mutations: {
     setCurrentTask(state, value) {
       state.currentTask = value;
+    },
+    setTasks(state, value) {
+      state.tasks = value;
+    },
+    resetCurrentTask(state) {
+      state.currentTask = {};
     }
   },
   actions: {
+    fetchTasks({ commit }) {
+      axios
+        .get("https://todo-app-b3e26-default-rtdb.firebaseio.com/tasks.json")
+        .then(({ data }) => {
+          const tempArray = [];
+          for (let key in data) {
+            if (!data[key].deleteStatus) {
+              tempArray.push({ ...data[key], id: key });
+            }
+          }
+          commit("setTasks", tempArray);
+        })
+        .catch(/*e => console.log(e)*/);
+    },
+
     addTaskToState(state, newTask) {
       axios
         .post(
           "https://todo-app-b3e26-default-rtdb.firebaseio.com/tasks.json",
-          newTask[0]
+          newTask
         )
-        .then(response => {
-          this.state.tasks.push(newTask[0]);
+        .then(({ data }) => {
+          newTask.id = data.name;
+          this.state.tasks.push(newTask);
         })
         .catch(e => console.log(e));
     },
     deleteTask(state, taskId) {
-      axios
-        .post("https://todo-app-b3e26-default-rtdb.firebaseio.com/tasks.json", {
-          key: taskId
-        })
-        .then(response => {
-          let data = response.data;
-          for (let key in data) {
-            if (key === taskId) {
-              data[key].deleteStatus = true;
-            }
-          }
-          console.log("response", response);
-        })
+      return axios
+        .delete(
+          "https://todo-app-b3e26-default-rtdb.firebaseio.com/tasks/" +
+            taskId +
+            ".json"
+        )
+        .then(response => {})
+        .catch(e => console.log(e));
+    },
+    editTask(state, editedTask) {
+      return axios
+        .put(
+          "https://todo-app-b3e26-default-rtdb.firebaseio.com/tasks/" +
+            editedTask.key +
+            ".json",
+          editedTask
+        )
+        .then(response => {})
         .catch(e => console.log(e));
     }
   },

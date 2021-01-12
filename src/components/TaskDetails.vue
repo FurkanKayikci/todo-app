@@ -8,7 +8,7 @@
         </v-col>
 
         <v-col class="md-2 shrink fill-height d-flex justify-end">
-          <v-btn icon color="orange">
+          <v-btn icon color="orange" @click="dialog = true">
             <v-icon>mdi-pencil-outline</v-icon>
           </v-btn>
 
@@ -35,25 +35,95 @@
         </div>
       </div>
     </template>
+
+    <v-dialog v-model="dialog" persistent max-width="600px">
+      <v-card>
+        <v-toolbar color="deep-purple" dark>Add Task</v-toolbar>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  id="taskName"
+                  v-model="currentTask.title"
+                  type="text"
+                  name="taskName"
+                  dense
+                  color="deep-purple"
+                  outlined
+                  label="Task Name"
+                  hide-details
+                  :value="currentTask.title"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-textarea
+                  id="taskExplanation"
+                  v-model="currentTask.text"
+                  type="text"
+                  name="taskExplanation"
+                  dense
+                  color="deep-purple"
+                  outlined
+                  label="Task Explanation"
+                  hide-details
+                  :value="currentTask.text"
+                ></v-textarea>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red" text @click="dialog = false">
+            Close
+          </v-btn>
+          <v-btn
+            color="deep-purple"
+            text
+            @click="editTaskEvent(currentTask.id)"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { mapActions } from "vuex";
+import { mapGetters, mapMutations, mapActions, mapState } from "vuex";
 export default {
   name: "TaskDetails",
   data() {
-    return {};
+    return {
+      dialog: false,
+      taskName: "",
+      taskExplanation: ""
+    };
   },
-  computed: mapGetters({
-    currentTask: "getCurrentTask"
-  }),
+  computed: {
+    ...mapState(["currentTask"])
+  },
   methods: {
-    ...mapActions(["deleteTask"]),
+    ...mapActions(["deleteTask", "fetchTasks", "editTask"]),
+    ...mapMutations(["resetCurrentTask"]),
+
     deleteTaskEvent(taskKey) {
-      console.log("sil buton", taskKey);
-      this.deleteTask(taskKey);
+      this.deleteTask(taskKey).finally(() => {
+        this.fetchTasks();
+        this.resetCurrentTask();
+      });
+    },
+    editTaskEvent(taskKey) {
+      const tempTask = {
+        title: this.currentTask.title,
+        text: this.currentTask.text,
+        key: taskKey
+      };
+      this.editTask(tempTask).finally(() => {
+        this.dialog = false;
+      });
     }
   }
 };
